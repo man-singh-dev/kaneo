@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { getIdToken } from "@/fetchers/oauth/get-id-token";
 import { descriptionSaveQueue } from "@/lib/description-save-queue";
@@ -8,6 +8,7 @@ import { signOutState } from "@/lib/sign-out-state";
 
 function useSignOut(idpLogoutUrl?: string | null) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: session } = authClient.useSession();
 
   return useMutation({
@@ -36,6 +37,7 @@ function useSignOut(idpLogoutUrl?: string | null) {
           throw new Error(result.error.message);
         }
         descriptionSaveQueue.clear();
+        queryClient.clear();
         if (url) {
           window.location.href = url.toString();
         } else {
